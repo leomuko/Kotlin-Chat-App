@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import com.example.kotlinchatapp.R
 import com.example.kotlinchatapp.datamodels.UserImageModel
+import com.example.kotlinchatapp.messages.AllMessages
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -67,13 +68,17 @@ class UploadImageActivity : AppCompatActivity() {
 
     private fun saveUserProfileImage(profileImageUrl: String) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
-        val dbref = FirebaseDatabase.getInstance().getReference("/user-images/$uid")
-        var imageToStore: UserImageModel = UserImageModel(
-            uid,
-            profileImageUrl!!
-        )
-        dbref.setValue(imageToStore).addOnSuccessListener {
+        //val dbref = FirebaseDatabase.getInstance().getReference("/user-images/$uid")
+        val dbref = FirebaseDatabase.getInstance().getReference("/users").child("$uid").child("profileImageUrl")
+//        var imageToStore: UserImageModel = UserImageModel(
+//            uid,
+//            profileImageUrl!!
+//        )
+        dbref.setValue(profileImageUrl).addOnSuccessListener {
             Log.d(TAG, "user profile image successfully stored")
+            val intent = Intent(this, AllMessages::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }.addOnFailureListener {
             Log.d(TAG, "user not successfully stored")
         }

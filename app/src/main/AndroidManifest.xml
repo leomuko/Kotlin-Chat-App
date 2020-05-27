@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UserRegister.UploadImageActivity"></activity>
+        <activity android:name=".messages.AddChats"></activity>
+        <activity android:name=".messages.AllMessages" />
+        <activity android:name=".UserRegister.UploadImageActivity" />
         <activity android:name=".UserRegister.SignupActivity" />
         <activity
             android:name=".UserRegister.LoginActivity"

@@ -62,7 +62,8 @@ class SignupActivity : AppCompatActivity() {
         val databaseRef = FirebaseDatabase.getInstance().getReference("/users/$uid")
         val userToSave = UserModel(
             uid,
-            username
+            username,
+            ""
         )
         databaseRef.setValue(userToSave).addOnCompleteListener {
             Log.d(TAG,"User saved to database")

@@ -1,5 +1,6 @@
 package com.example.kotlinchatapp.messages
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -29,7 +30,6 @@ class AddChats : AppCompatActivity() {
         actionbar!!.title = "Select Contacts"
         //set back button
         actionbar.setDisplayHomeAsUpEnabled(true)
-        actionbar.setDisplayHomeAsUpEnabled(true)
         fetchUsers()
 
     }
@@ -57,7 +57,10 @@ class AddChats : AppCompatActivity() {
                     }
                     adapter.setOnItemClickListener { item, view ->
                         val userSelected = item as UserItem
-                        Toast.makeText(view.context,"User has been clicked", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(view.context, UserChatActivity::class.java)
+                        intent.putExtra("user",userSelected.user)
+                        startActivity(intent)
+                        finish()
                     }
                     add_chat_recycler_view.adapter = adapter
                 }

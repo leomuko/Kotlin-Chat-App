@@ -80,7 +80,7 @@ class UploadImageActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }.addOnFailureListener {
-            Log.d(TAG, "user not successfully stored")
+            Log.d(TAG, "user Image not successfully stored")
         }
     }
 

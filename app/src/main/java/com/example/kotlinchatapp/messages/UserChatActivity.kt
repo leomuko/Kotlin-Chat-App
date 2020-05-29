@@ -13,7 +13,6 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.activity_user_chat.*
@@ -28,7 +27,7 @@ class UserChatActivity : AppCompatActivity() {
 
         selectedUser = intent.getParcelableExtra("user")
         supportActionBar?.title = selectedUser!!.username
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         user_chat_recyclerview.adapter = adapter
         listenForMessages()
@@ -65,12 +64,12 @@ class UserChatActivity : AppCompatActivity() {
         }
 
         receivingRef.setValue(chatMessage)
-        val allMessagesSentRef = FirebaseDatabase.getInstance()
-            .getReference("/all-messages/$sendingUserId/$receivingUserId").push()
-        allMessagesSentRef.setValue(chatMessage)
-        val allMessagesReceivedRef = FirebaseDatabase.getInstance()
-            .getReference("/user-messages/$receivingUserId/$sendingUserId").push()
-        allMessagesReceivedRef.setValue(chatMessage)
+        val latestMessagesSentRef = FirebaseDatabase.getInstance()
+            .getReference("/latest-messages/$sendingUserId/$receivingUserId")
+        latestMessagesSentRef.setValue(chatMessage)
+        val latestMessagesReceivedRef = FirebaseDatabase.getInstance()
+            .getReference("/latest-messages/$receivingUserId/$sendingUserId")
+        latestMessagesReceivedRef.setValue(chatMessage)
 
 
     }

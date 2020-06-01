@@ -6,16 +6,27 @@
     android:layout_height="wrap_content"
     android:padding="5dp">
 
-    <TextView
-        android:id="@+id/receivemessage_text"
+    <RelativeLayout
+        android:id="@+id/message_root"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_border"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:padding="10dp"
-        android:text="text"
+        android:layout_gravity="end"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/receiver_text_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/receivemessage_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="250dp"
+            android:minWidth="120dp"
+            android:padding="10dp"
+            android:text="@string/random"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

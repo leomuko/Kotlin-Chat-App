@@ -1,7 +1,7 @@
 package com.example.kotlinchatapp.ItemViewHolders
 
 import com.example.kotlinchatapp.R
-import com.example.kotlinchatapp.datamodels.ChatModel
+import com.example.kotlinchatapp.datamodels.ChatMessageModel
 import com.example.kotlinchatapp.datamodels.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -12,19 +12,25 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.all_messages_layout.view.*
 
-class allMessagesItem(val chatMessage: ChatModel): com.xwray.groupie.kotlinandroidextensions.Item() {
-    var chatPartnerUser : UserModel? = null
+class allMessagesItem(val chatMessageMessage: ChatMessageModel) :
+    com.xwray.groupie.kotlinandroidextensions.Item() {
+    var chatPartnerUser: UserModel? = null
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.user_latest_message.text = chatMessage.text
-        //viewHolder.itemView.username_text.text = chatMessage.text
+        when (chatMessageMessage.messageType) {
+            "TEXT" -> viewHolder.itemView.user_latest_message.text = chatMessageMessage.text
+            "IMAGE" -> viewHolder.itemView.user_latest_message.text = "Sent an Image"
+            else ->{
+                viewHolder.itemView.user_latest_message.text = chatMessageMessage.text
+            }
+        }
         var chatPatnerId: String = ""
-        if (FirebaseAuth.getInstance().uid == chatMessage.sendingUserId){
-            chatPatnerId = chatMessage.receivingUserId
-        }else{
-            chatPatnerId = chatMessage.sendingUserId
+        if (FirebaseAuth.getInstance().uid == chatMessageMessage.sendingUserId) {
+            chatPatnerId = chatMessageMessage.receivingUserId
+        } else {
+            chatPatnerId = chatMessageMessage.sendingUserId
         }
         val dbref = FirebaseDatabase.getInstance().getReference("users/$chatPatnerId")
-        dbref.addListenerForSingleValueEvent(object : ValueEventListener{
+        dbref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -46,7 +52,7 @@ class allMessagesItem(val chatMessage: ChatModel): com.xwray.groupie.kotlinandro
         return R.layout.all_messages_layout
     }
 
-    private fun fetchUser(id: String){
+    private fun fetchUser(id: String) {
         val userref = FirebaseDatabase.getInstance().getReference("users/$id")
 
     }

@@ -3,14 +3,13 @@ package com.example.kotlinchatapp.messages
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.kotlinchatapp.ItemViewHolders.allMessagesItem
 import com.example.kotlinchatapp.R
 import com.example.kotlinchatapp.UserRegister.LoginActivity
-import com.example.kotlinchatapp.datamodels.ChatModel
+import com.example.kotlinchatapp.datamodels.ChatMessageModel
 import com.example.kotlinchatapp.datamodels.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -23,7 +22,7 @@ class AllMessages : AppCompatActivity() {
         var currentlyLoggedInUser: UserModel? = null
     }
 
-    val latestMessagesMap = HashMap<String, ChatModel>()
+    val latestMessagesMap = HashMap<String, ChatMessageModel>()
     val adapter = GroupAdapter<GroupieViewHolder>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,9 +57,9 @@ class AllMessages : AppCompatActivity() {
             }
 
             override fun onChildChanged(p0: DataSnapshot, p1: String?) {
-                val chatMessage: ChatModel = p0.getValue(ChatModel::class.java) ?: return
+                val chatMessageMessage: ChatMessageModel = p0.getValue(ChatMessageModel::class.java) ?: return
 
-                latestMessagesMap[p0.key!!] = chatMessage
+                latestMessagesMap[p0.key!!] = chatMessageMessage
                 refreshRecyclerView()
                 adapter.setOnItemClickListener { item, view ->
                     val userSelected = item as allMessagesItem
@@ -73,9 +72,9 @@ class AllMessages : AppCompatActivity() {
             }
 
             override fun onChildAdded(p0: DataSnapshot, p1: String?) {
-                val chatMessage: ChatModel = p0.getValue(ChatModel::class.java) ?: return
-                adapter.add(allMessagesItem(chatMessage))
-                latestMessagesMap[p0.key!!] = chatMessage
+                val chatMessageMessage: ChatMessageModel = p0.getValue(ChatMessageModel::class.java) ?: return
+                adapter.add(allMessagesItem(chatMessageMessage))
+                latestMessagesMap[p0.key!!] = chatMessageMessage
                 refreshRecyclerView()
                 adapter.setOnItemClickListener { item, view ->
                     val userSelected = item as allMessagesItem

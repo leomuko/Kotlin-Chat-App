@@ -63,7 +63,8 @@ class LoginActivity : AppCompatActivity() {
                 return@addOnCompleteListener
             }
         }.addOnFailureListener {
-            Toast.makeText(this,"Please enter valide user email and password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,"Please enter valid user email and password", Toast.LENGTH_SHORT).show()
+            Log.i("flag", "signInAnonymously:failure", it)
         }
     }
 

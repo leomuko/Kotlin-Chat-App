@@ -63,6 +63,7 @@ class SignupActivity : AppCompatActivity() {
         val userToSave = UserModel(
             uid,
             username,
+            "",
             ""
         )
         databaseRef.setValue(userToSave).addOnCompleteListener {

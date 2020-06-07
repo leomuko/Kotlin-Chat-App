@@ -5,27 +5,33 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.kotlinchatapp.ItemViewHolders.ReceiveImageItem
 import com.example.kotlinchatapp.ItemViewHolders.ReceivingItem
 import com.example.kotlinchatapp.ItemViewHolders.SendImageItem
 import com.example.kotlinchatapp.ItemViewHolders.SendingItem
 import com.example.kotlinchatapp.R
 import com.example.kotlinchatapp.datamodels.ChatMessageModel
+import com.example.kotlinchatapp.datamodels.DataModel
+import com.example.kotlinchatapp.datamodels.RootModel
 import com.example.kotlinchatapp.datamodels.UserModel
+import com.example.kotlinchatapp.service.ApiClient
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.activity_user_chat.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class UserChatActivity : AppCompatActivity() {
-    companion object{
+    companion object {
         val SEND_IMAGE_CODE = 0
+        val TAG = "UserChatActivity"
     }
 
     var selectedUser: UserModel? = null
@@ -48,9 +54,12 @@ class UserChatActivity : AppCompatActivity() {
         }
         send_message_button.setOnClickListener {
             performSendMessage()
+
         }
 
     }
+
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -58,7 +67,7 @@ class UserChatActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == SEND_IMAGE_CODE && resultCode == Activity.RESULT_OK && data != null){
+        if (requestCode == SEND_IMAGE_CODE && resultCode == Activity.RESULT_OK && data != null) {
             imageToSendUrl = data.data
             saveImageMessageToDatabase()
         }
@@ -97,7 +106,7 @@ class UserChatActivity : AppCompatActivity() {
         )
         sendingRef.setValue(chatMessage).addOnSuccessListener {
             user_chat_message_entry.text?.clear()
-            user_chat_recyclerview.scrollToPosition(adapter.itemCount - 1)
+            user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount -1)
         }
 
         receivingRef.setValue(chatMessage)
@@ -131,8 +140,11 @@ class UserChatActivity : AppCompatActivity() {
 
         )
         sendingRef.setValue(chatMessage).addOnSuccessListener {
+
             user_chat_message_entry.text?.clear()
-            user_chat_recyclerview.scrollToPosition(adapter.itemCount - 1)
+            user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)
+            sendMessageNotification(chatMessage)
+
         }
 
         receivingRef.setValue(chatMessage)
@@ -169,18 +181,18 @@ class UserChatActivity : AppCompatActivity() {
                 val chatAdded = p0.getValue(ChatMessageModel::class.java)
                 if (chatAdded != null) {
                     if (chatAdded.sendingUserId == sendingUserId) {
-                        when (chatAdded.messageType){
+                        when (chatAdded.messageType) {
                             "TEXT" -> adapter.add(SendingItem(chatAdded.text))
                             "IMAGE" -> adapter.add(SendImageItem(chatAdded.text))
-                            else ->{
+                            else -> {
                                 adapter.add(SendingItem(chatAdded.text))
                             }
                         }
                     } else {
-                        when(chatAdded.messageType) {
-                           "TEXT" -> adapter.add(ReceivingItem(chatAdded.text))
+                        when (chatAdded.messageType) {
+                            "TEXT" -> adapter.add(ReceivingItem(chatAdded.text))
                             "IMAGE" -> adapter.add(ReceiveImageItem(chatAdded.text))
-                            else ->{
+                            else -> {
                                 adapter.add(ReceivingItem(chatAdded.text))
                             }
                         }
@@ -193,6 +205,47 @@ class UserChatActivity : AppCompatActivity() {
 
             override fun onChildRemoved(p0: DataSnapshot) {
 
+            }
+
+        })
+
+    }
+
+    private fun sendMessageNotification(messageToNotify: ChatMessageModel) {
+        var chatPatnerId: String = ""
+        if (FirebaseAuth.getInstance().uid == messageToNotify.sendingUserId) {
+            chatPatnerId = messageToNotify.receivingUserId
+        } else {
+            chatPatnerId = messageToNotify.sendingUserId
+        }
+        val dbref = FirebaseDatabase.getInstance().getReference("users/${chatPatnerId}")
+        dbref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val chatPartner = p0.getValue(UserModel::class.java)
+                val message = DataModel(
+                    messageToNotify.text,
+                    messageToNotify.messageType,
+                    chatPartner!!.username
+                )
+                val rootToSend = RootModel(chatPartner!!.userToken, message)
+                val call: Call<ResponseBody> = ApiClient.getClient.postNotification(rootToSend)
+                call.enqueue(object : Callback<ResponseBody> {
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.d(TAG, "Messgae Notification Not Successfully")
+                    }
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        Log.d(TAG, "Messgae Notification Successfully sent")
+                    }
+
+                })
             }
 
         })

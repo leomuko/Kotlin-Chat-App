@@ -182,18 +182,25 @@ class UserChatActivity : AppCompatActivity() {
                 if (chatAdded != null) {
                     if (chatAdded.sendingUserId == sendingUserId) {
                         when (chatAdded.messageType) {
-                            "TEXT" -> adapter.add(SendingItem(chatAdded.text))
-                            "IMAGE" -> adapter.add(SendImageItem(chatAdded.text))
+                            "TEXT" -> {adapter.add(SendingItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)}
+                            "IMAGE" -> {adapter.add(SendImageItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)}
+
                             else -> {
                                 adapter.add(SendingItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)
                             }
                         }
                     } else {
                         when (chatAdded.messageType) {
-                            "TEXT" -> adapter.add(ReceivingItem(chatAdded.text))
-                            "IMAGE" -> adapter.add(ReceiveImageItem(chatAdded.text))
+                            "TEXT" -> {adapter.add(ReceivingItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)}
+                            "IMAGE" -> {adapter.add(ReceiveImageItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)}
                             else -> {
                                 adapter.add(ReceivingItem(chatAdded.text))
+                                user_chat_recyclerview.smoothScrollToPosition(adapter.itemCount-1)
                             }
                         }
                     }

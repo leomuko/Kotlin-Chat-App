@@ -11,6 +11,7 @@ import android.os.Build.VERSION_CODES
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.kotlinchatapp.R
+import com.example.kotlinchatapp.messages.AllMessages
 import com.example.kotlinchatapp.messages.UserChatActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -41,9 +42,8 @@ class MyFirebaseInstanceIdService : FirebaseMessagingService() {
         messageBody: String,
         sendingUserName: String
     ) {
-        val intent = Intent(this, UserChatActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val intent = Intent(this, AllMessages::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         val channelId = "00000"
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)

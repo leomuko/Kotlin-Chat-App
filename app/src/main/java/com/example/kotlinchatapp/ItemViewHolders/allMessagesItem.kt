@@ -52,8 +52,5 @@ class allMessagesItem(val chatMessageMessage: ChatMessageModel) :
         return R.layout.all_messages_layout
     }
 
-    private fun fetchUser(id: String) {
-        val userref = FirebaseDatabase.getInstance().getReference("users/$id")
 
-    }
 }
